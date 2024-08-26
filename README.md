@@ -9,3 +9,11 @@ The synthetic experiments can be run using `./examples/synthetic/run_experiments
 The experiments for CausalBench can be run using `./examples/run_causalbench_einet.sh`, `./examples/run_causalbench_iSPN.sh`, `./examples/run_causalbench_ncm.sh`
 
 In order to replicate the experiments in the paper, be careful to set the values as describe in the experimental section in the appendix of the paper as batch size and runtime are not specified in the files to run the experiment but instead need to be changed in the code.
+
+## Further information
+
+Note, that this repository uses the following github repositories as resources:
+[causalbench](https://github.com/causalbench/causalbench)
+[NeuralCausalModels](https://github.com/CausalAILab/NeuralCausalModels)
+[EinsumNetworks](https://github.com/cambridge-mlg/EinsumNetworks)
+[SCC](https://github.com/olfub/SCC)
