@@ -13,7 +13,7 @@ In order to replicate the experiments in the paper, be careful to set the values
 ## Further information
 
 Note, that this repository uses the following github repositories as resources:
-[causalbench](https://github.com/causalbench/causalbench)
-[NeuralCausalModels](https://github.com/CausalAILab/NeuralCausalModels)
-[EinsumNetworks](https://github.com/cambridge-mlg/EinsumNetworks)
-[SCC](https://github.com/olfub/SCC)
+[causalbench](https://github.com/causalbench/causalbench),
+[NeuralCausalModels](https://github.com/CausalAILab/NeuralCausalModels),
+[EinsumNetworks](https://github.com/cambridge-mlg/EinsumNetworks),
+[SCC](https://github.com/olfub/SCC).
