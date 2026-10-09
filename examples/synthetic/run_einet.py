@@ -134,10 +134,10 @@ def train(args):
     )
     einet = init_spn(device, obs_size, int_size, args)
 
-    optim = torch.optim.Adam(einet.param_nn.parameters(), 0.0002)
+    optim = torch.optim.Adam(einet.param_nn.parameters(), args.lr)
     lr_schedule = torch.optim.lr_scheduler.ExponentialLR(optim, 0.99)
 
-    results = {"loss_train": [], "loss_test": [], "avg_diff": []}
+    results = {"loss_train": [], "loss_test": [], "nll_test": [], "avg_diff": []}
     early_stopper = EarlyStopper(patience=5, nip=0)
     time_thresholds = [0.5, 1, 2, 4, 5]  # in hours
     time_thresholds = [ts * 360 for ts in time_thresholds]  # in seconds
@@ -173,6 +173,7 @@ def train(args):
         current_epoch_str = f"Epoch {epoch} \t NLL Train: {round(total_ll.item() /len(train_loader), 3)} \t NLL Test: {round(test_ll.item() /len(test_loader), 3)} \t avg diff: {avg_diff}"
         results["loss_train"].append(total_ll.item())
         results["loss_test"].append(test_ll.item())
+        results["nll_test"].append(test_ll.item() / len(test_loader))
         results["avg_diff"].append(avg_diff)
         print(current_epoch_str)
         if args.log_to_file:
@@ -205,7 +206,7 @@ def train(args):
     return einet
 
 
-if __name__ == "__main__":
+def build_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--batch_size", default=64, type=int)
     parser.add_argument("--batch_size_test", default=1024, type=int)
@@ -219,6 +220,7 @@ if __name__ == "__main__":
     parser.add_argument("--nn", default="mlp", type=str)
     parser.add_argument("--depth", default=10, type=int)
     parser.add_argument("--K", default=5, type=int)
+    parser.add_argument("--lr", default=0.0002, type=float)
     parser.add_argument("--num_repetitions", default=5, type=int)
     parser.add_argument("--num_dims", default=1, type=int)
     parser.add_argument("--min_var", default=0.1, type=float)
@@ -226,5 +228,9 @@ if __name__ == "__main__":
     parser.add_argument("--device", default=-1, type=int)
     parser.add_argument("--intervention_value", default=True, type=bool)  # whether an intervention value is random or a specific value is set
     parser.add_argument("--log_to_file", default=True, type=bool)
-    args = parser.parse_args()
+    return parser
+
+
+if __name__ == "__main__":
+    args = build_parser().parse_args()
     einet = train(args)

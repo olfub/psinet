@@ -1,0 +1,57 @@
+name: psinet-hpo
+
+services:
+  mchpo:
+    build:
+      context: ../../../automl/mc-hpo
+      dockerfile: Dockerfile
+      args:
+        # the Dockerfile installs a cp39 ConfigSpace wheel
+        baseimage: python:3.9-slim
+    image: mchpo
+    working_dir: /app
+    volumes:
+      - ../../../automl/mc-hpo:/app
+    # setup.sh applies runtime package fixes and ends in `bash`, which exits immediately without a TTY
+    command: sh -c "/app/setup.sh && uvicorn web_server:app --host 0.0.0.0 --port 8000"
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60m
+
+  psinet:
+    build:
+      context: ..
+      dockerfile: .docker/Dockerfile
+    image: psinet
+    working_dir: /workspaces/psinet
+    volumes:
+      - ..:/workspaces/psinet
+    ipc: host
+    command: >
+      python examples/synthetic/einet_hpo.py
+      --mchpo-url http://mchpo:8000
+      --callback-url http://psinet:8001/test_config
+      --optimizer rs
+      --optimizer-config '{"iterations": 20}'
+      --hpo-dir results/hpo
+      --data_name BVM_5_5_0
+      --data_path_train datasets/temp/
+      --data_path_test datasets/temp/
+      --device 0
+    expose:
+      - "8001"
+    depends_on:
+      mchpo:
+        condition: service_healthy
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

@@ -2,3 +2,7 @@ rtpt==0.0.4
 causalbench==1.1.2
 normflows==1.7.3
 distributed==2023.2.1
+fastapi==0.104.1
+uvicorn==0.24.0
+requests
+ConfigSpace==0.7.1
